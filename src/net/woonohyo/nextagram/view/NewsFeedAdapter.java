@@ -10,6 +10,7 @@ import net.woonohyo.nextagram.R;
 import net.woonohyo.nextagram.R.id;
 import net.woonohyo.nextagram.db.ArticleDTO;
 import net.woonohyo.nextagram.provider.NextagramContract;
+import net.woonohyo.nextagram.util.ImageLoader;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.sax.StartElementListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -39,6 +41,8 @@ public class NewsFeedAdapter extends CursorAdapter {
 	private Cursor cursor;
 	private SharedPreferences sharedPreferences;
 	private LayoutInflater layoutInflater;
+	private Bitmap bitmap;
+	private ImageLoader imageLoader = ImageLoader.getInstance();
 	
 	public NewsFeedAdapter(Context context, Cursor cursor, int layoutId) {
 		super(context, cursor, layoutId);
@@ -82,18 +86,27 @@ public class NewsFeedAdapter extends CursorAdapter {
 		viewHolder.articleNumber = articleNumber;
 		
 		String imgPath = context.getFilesDir().getPath() + "/" + imageName;
-		File fileAtImgPath = new File(imgPath);
+		bitmap = imageLoader.get(imgPath);
 		imageViewWeakReference = new WeakReference<ImageView>(viewHolder.imageView);
-		
-		
-		if (fileAtImgPath.exists()) {
-			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inPurgeable = true;
+
+		if (bitmap != null) {
+			Log.i(TAG, "Cache Hit! - " + imgPath);
+			imageViewWeakReference.get().setImageBitmap(bitmap);
 			
-			Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
-			Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-			viewHolder.imageView.setImageBitmap(resized);
-//			imageViewWeakReference.get().setImageBitmap(resized);
+		} else {
+			Log.i(TAG, "Saving new one" + imgPath);
+			File fileAtImgPath = new File(imgPath);
+			
+			if (fileAtImgPath.exists()) {
+				int sampleSize = 4;
+				BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+				bmOptions.inPurgeable = true;
+				bmOptions.inSampleSize = sampleSize;
+				bitmap = BitmapFactory.decodeFile(imgPath, bmOptions);
+				Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+				imageViewWeakReference.get().setImageBitmap(resized);
+				imageLoader.put(imgPath, resized);
+			}
 		}
 	}
 	

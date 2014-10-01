@@ -99,15 +99,9 @@ public class NextagramProvider extends ContentProvider {
 		// ARTICLE_LIST에 대한 URI 요청 시,
 		if (URI_MATCHER.match(uri) == ARTICLE_LIST) {
 			// database에 insert 후 해당 ID를 리턴 받음.
-			String sql = "SELECT * FROM Articles";
-			Cursor cursor = database.rawQuery(sql, null);
-			Log.i(TAG, "Total Row:" + cursor.getCount());
-			Log.i(TAG, "Current ID:" + values.get("_id"));
-			cursor.close();
-			if (cursor.getCount() == Integer.parseInt(values.get("_id").toString())) {
-				return null;
-			}
-			
+			if(isDBLatest(values)) return null;
+			if(isAlreadyExist(values)) return null;
+
 			long id = database.insert("Articles", null, values);
 
 			Uri itemUri = ContentUris.withAppendedId(uri, id);
@@ -117,6 +111,29 @@ public class NextagramProvider extends ContentProvider {
 		}
 
 		return null;
+	}
+
+	private boolean isAlreadyExist(ContentValues values) {
+		String sql = "SELECT * FROM Articles WHERE _id = " + values.getAsString("_id");
+		Cursor cursor = database.rawQuery(sql, null);
+		if(cursor.getCount() == 1) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	private boolean isDBLatest(ContentValues values) {
+		String sql = "SELECT * FROM Articles";
+		Cursor cursor = database.rawQuery(sql, null);
+
+		if (cursor.getCount() == Integer.parseInt(values.get("_id").toString())) {
+			cursor.close();
+			return true;
+		}
+		cursor.close();
+		return false;
+
 	}
 
 	@Override
