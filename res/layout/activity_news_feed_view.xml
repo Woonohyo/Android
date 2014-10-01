@@ -15,15 +15,8 @@
                 android:id="@+id/homeView_button_write"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Write" />
-
-            <Button
-                android:id="@+id/homeView_button_refresh"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:text="Refresh" />
+                android:layout_weight="1.0"
+                android:text="New Post" />
         </LinearLayout>
 
         <ListView

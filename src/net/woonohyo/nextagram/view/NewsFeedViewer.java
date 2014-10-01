@@ -34,7 +34,6 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 	private ProviderDao dao;
 	private Proxy proxy;
 	private Button buWrite;
-	private Button buRefresh;
 	private SideNavigationView sideNavigationView;
 	private SharedPreferences sharedPreferences;
 	private NewsFeedController newsFeedController;
@@ -46,10 +45,8 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		dao = new ProviderDao(getApplicationContext());
 
 		buWrite = (Button) findViewById(R.id.homeView_button_write);
-		buRefresh = (Button) findViewById(R.id.homeView_button_refresh);
 
 		buWrite.setOnClickListener(this);
-		buRefresh.setOnClickListener(this);
 
 		getSupportActionBar().setHomeButtonEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -153,10 +150,6 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 			// Intent intent = new Intent(this, ArticleWriter.class);
 			Intent intent = new Intent("net.woonohyo.nextagram.view.ArticleWriter");
 			startActivity(intent);
-			break;
-
-		case R.id.homeView_button_refresh:
-			newsFeedController.refreshData();
 			break;
 
 		default:
