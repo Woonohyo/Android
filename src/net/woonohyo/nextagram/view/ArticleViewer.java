@@ -9,7 +9,7 @@ import net.woonohyo.nextagram.R.id;
 import net.woonohyo.nextagram.R.layout;
 import net.woonohyo.nextagram.R.menu;
 import net.woonohyo.nextagram.db.ArticleDTO;
-import net.woonohyo.nextagram.db.Dao;
+import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.util.ImageLoader;
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -42,7 +42,7 @@ public class ArticleViewer extends Activity {
 
 		String articleNumber = getIntent().getExtras().getString("ArticleNumber");
 
-		Dao dao = new Dao(getApplicationContext());
+		ProviderDao dao = new ProviderDao(getApplicationContext());
 
 		ArticleDTO article = dao.getArticleByArticleNumber(Integer.parseInt(articleNumber));
 

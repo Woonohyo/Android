@@ -2,7 +2,7 @@ package net.woonohyo.nextagram.service;
 
 import java.util.*;
 
-import net.woonohyo.nextagram.db.Dao;
+import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.network.Proxy;
 import android.app.Service;
 import android.content.Intent;
@@ -14,7 +14,7 @@ public class SyncDataService extends Service {
 	private TimerTask timerTask;
 	private Timer timer;
 	private Proxy proxy;
-	private Dao dao;
+	private ProviderDao dao;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -27,7 +27,7 @@ public class SyncDataService extends Service {
 		super.onCreate();
 		Log.i(TAG, "onCreate");
 		proxy = new Proxy(getApplicationContext());
-		dao = new Dao(getApplicationContext());
+		dao = new ProviderDao(getApplicationContext());
 	}
 
 	@Override

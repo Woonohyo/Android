@@ -3,11 +3,14 @@ package net.woonohyo.nextagram.view;
 import java.util.ArrayList;
 
 import net.woonohyo.nextagram.R;
+import net.woonohyo.nextagram.controller.NewsFeedController;
 import net.woonohyo.nextagram.db.ArticleDTO;
-import net.woonohyo.nextagram.db.Dao;
+import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.network.Proxy;
+import net.woonohyo.nextagram.provider.NextagramContract;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -28,18 +31,19 @@ import com.devspark.sidenavigation.SideNavigationView.Mode;
 public class NewsFeedViewer extends ActionBarActivity implements OnClickListener, OnItemClickListener {
 	private final String TAG = NewsFeedViewer.class.getSimpleName();
 	private ArrayList<ArticleDTO> articleList = new ArrayList<ArticleDTO>();
-	private Dao dao;
+	private ProviderDao dao;
 	private Proxy proxy;
 	private Button buWrite;
 	private Button buRefresh;
 	private SideNavigationView sideNavigationView;
 	private SharedPreferences sharedPreferences;
+	private NewsFeedController newsFeedController;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_news_feed_view);
-		dao = new Dao(getApplicationContext());
+		dao = new ProviderDao(getApplicationContext());
 
 		buWrite = (Button) findViewById(R.id.homeView_button_write);
 		buRefresh = (Button) findViewById(R.id.homeView_button_refresh);
@@ -54,23 +58,19 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		sideNavigationView.setMenuItems(R.menu.side_bar_menu);
 		sideNavigationView.setMenuClickCallback(sideNavigationCallback);
 		sideNavigationView.setMode(Mode.LEFT);
+
+		newsFeedController = new NewsFeedController(getApplicationContext());
+		newsFeedController.initSharedPreferences();
+		newsFeedController.startSyncDataService();
+		newsFeedController.refreshData();
 		
-		sharedPreferences = getSharedPreferences(getResources().getString(R.string.shared_preferences_name), MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString(getResources().getString(R.string.server_url), getResources().getString(R.string.server_url_value));
-		editor.putString(getResources().getString(R.string.pref_article_number), 0+"");
-		editor.commit();
-		
-		Intent intentSyncData = new Intent("net.woonohyo.nextagram.service.SyncDataService");
-		startService(intentSyncData);
-		
-		refreshData();
+		setListView(dao.getArticleList());
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		refreshData();
+		newsFeedController.refreshData();
 	}
 
 	@Override
@@ -108,7 +108,7 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		@Override
 		public void onSideNavigationItemClick(int itemId) {
 			String text = "";
-			Log.i(TAG, itemId+"");
+			Log.i(TAG, itemId + "");
 			switch (itemId) {
 			case R.id.side_navigation_menu_add:
 				text = "ADD pressed";
@@ -132,44 +132,16 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		}
 	};
 
-	private final Handler handler = new Handler();
-
-	private void refreshData() {
-//		Thread에서 메인UI의 접근은 허용되지 않기 때문에 handler를 이용한다.
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				setListView();
-			}
-		});
-		
-//		new Thread() {
-//			@Override
-//			public void run() {
-//				// network 작업을 하는 Proxy는 반드시 Thread 내부에서 실행되어야 한다.
-//				proxy = new Proxy(getApplicationContext());
-//				String jsonData = proxy.getJSON();
-//				dao.insertJsonData(jsonData);
-//
-//				// Thread에서 메인UI의 접근은 허용되지 않기 때문에 handler를 이용한다.
-//				handler.post(new Runnable() {
-//					@Override
-//					public void run() {
-//						setListView();
-//					}
-//				});
-//			}
-//		}.start();
-	}
-
-	private void setListView() {
+	private void setListView(ArrayList<ArticleDTO> arrayList) {
 		// CustomAdapter 적용
-		articleList = dao.getArticleList();
 		ListView listView = (ListView) findViewById(R.id.main_listView);
-		NewsFeedAdapter customAdapter = new NewsFeedAdapter(this, R.layout.main_list_row, articleList);
-		listView.setAdapter(customAdapter);
-
+		Cursor mCursor = getContentResolver().query(NextagramContract.Articles.CONTENT_URI, NextagramContract.Articles.PROJECTION_ALL, null, null,
+				NextagramContract.Articles._ID + " ASC");
+		Log.i(TAG, mCursor.toString());
+		// NewsFeedAdapter customAdapter = new NewsFeedAdapter(this,
+		// R.layout.main_list_row, articleList);
+		NewsFeedAdapter newsFeedAdapter = new NewsFeedAdapter(this, mCursor, R.layout.main_list_row);
+		listView.setAdapter(newsFeedAdapter);
 		// listView에 ClickListener 설정
 		listView.setOnItemClickListener(this);
 	}
@@ -178,13 +150,13 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.homeView_button_write:
-			//Intent intent = new Intent(this, ArticleWriter.class);
+			// Intent intent = new Intent(this, ArticleWriter.class);
 			Intent intent = new Intent("net.woonohyo.nextagram.view.ArticleWriter");
 			startActivity(intent);
 			break;
 
 		case R.id.homeView_button_refresh:
-			refreshData();
+			newsFeedController.refreshData();
 			break;
 
 		default:
@@ -194,7 +166,7 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//		Intent intent = new Intent(this, ArticleViewer.class);
+		// Intent intent = new Intent(this, ArticleViewer.class);
 		Intent intent = new Intent("net.woonohyo.nextagram.view.ArticleViewer");
 		intent.putExtra("ArticleNumber", articleList.get(position).getArticleNumber() + "");
 		startActivity(intent);

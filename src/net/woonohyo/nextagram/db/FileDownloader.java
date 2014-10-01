@@ -28,7 +28,7 @@ public class FileDownloader {
 		// 파일이 존재하지 않을 때에만 다운로드
 		if (!filePath.exists()) {
 			try {
-				Log.i(TAG, "Downloading " + fileName + " from " + filePath);
+				Log.i(TAG, "Downloading " + fileName + " to " + filePath);
 				URL url = new URL(fileUrl);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
