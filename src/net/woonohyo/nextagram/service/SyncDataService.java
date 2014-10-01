@@ -2,6 +2,7 @@ package net.woonohyo.nextagram.service;
 
 import java.util.*;
 
+import net.woonohyo.nextagram.db.ArticleDTO;
 import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.network.Proxy;
 import android.app.Service;
@@ -38,9 +39,8 @@ public class SyncDataService extends Service {
 			
 			@Override
 			public void run() {
-				String jsonData = proxy.getJSON();
-				dao.insertJsonData(jsonData);
-				Log.i(TAG, jsonData);
+				ArrayList<ArticleDTO> articleList = proxy.getArticleDTO();
+				dao.insertData(articleList);
 			}
 		};
 		

@@ -1,6 +1,9 @@
 package net.woonohyo.nextagram.controller;
 
+import java.util.ArrayList;
+
 import net.woonohyo.nextagram.R;
+import net.woonohyo.nextagram.db.ArticleDTO;
 import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.network.Proxy;
 import android.content.Context;
@@ -32,8 +35,8 @@ public class NewsFeedController {
 			@Override
 			public void run() {
 				// network 작업을 하는 Proxy는 반드시 Thread 내부에서 실행되어야 한다.
-				String jsonData = proxy.getJSON();
-				dao.insertJsonData(jsonData);
+				ArrayList<ArticleDTO> articleList = proxy.getArticleDTO();
+				dao.insertData(articleList);
 			}
 		}.start();
 	}

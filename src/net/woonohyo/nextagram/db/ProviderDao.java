@@ -1,5 +1,6 @@
 package net.woonohyo.nextagram.db;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import net.woonohyo.nextagram.R;
@@ -40,7 +41,6 @@ public class ProviderDao {
 			JSONArray jArr = new JSONArray(jsonData);
 
 			for (int i = 0; i < jArr.length(); i++) {
-				ContentValues values = new ContentValues();
 
 				JSONObject jObj = jArr.getJSONObject(i);
 				articleNumber = jObj.getInt("ArticleNumber");
@@ -60,7 +60,19 @@ public class ProviderDao {
 					editor.putString(prefArticleNumberKey, (articleNumber - 1) + "");
 					editor.commit();
 				}
+				
+				try {
+					title = URLDecoder.decode(title, "UTF-8");
+					writer = URLDecoder.decode(writer, "UTF-8");
+					id = URLDecoder.decode(id, "UTF-8");
+					content = URLDecoder.decode(content, "UTF-8");
+					writeDate = URLDecoder.decode(writeDate, "UTF-8");
+					imgName = URLDecoder.decode(imgName, "UTF-8");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
+				ContentValues values = new ContentValues();
 				values.put("_id", articleNumber);
 				values.put("Title", title);
 				values.put("Writer", writer);
@@ -68,8 +80,6 @@ public class ProviderDao {
 				values.put("Content", content);
 				values.put("WriteDate", writeDate);
 				values.put("ImgName", imgName);
-
-				Log.i(TAG, "ArticleNumber: " + articleNumber + " Title: " + title);
 
 				context.getContentResolver().insert(NextagramContract.Articles.CONTENT_URI, values);
 
@@ -89,7 +99,7 @@ public class ProviderDao {
 		String title;
 		String writer;
 		String id;
-		String contents;
+		String content;
 		String writeDate;
 		String imgName;
 
@@ -105,10 +115,10 @@ public class ProviderDao {
 				title = cursor.getString(1);
 				writer = cursor.getString(2);
 				id = cursor.getString(3);
-				contents = cursor.getString(4);
+				content = cursor.getString(4);
 				writeDate = cursor.getString(5);
 				imgName = cursor.getString(6);
-				articleList.add(new ArticleDTO(articleNumber, title, writer, id, contents, writeDate, imgName));
+				articleList.add(new ArticleDTO(articleNumber, title, writer, id, content, writeDate, imgName));
 
 				cursor.moveToNext();
 			}
@@ -150,6 +160,61 @@ public class ProviderDao {
 
 		cursor.close();
 		return article;
+	}
+	
+	public void insertData(ArrayList<ArticleDTO> articleList) {
+		int articleNumber;
+		String title;
+		String writer;
+		String id;
+		String content;
+		String writeDate;
+		String imgName;
 
+		FileDownloader fileDownloader = new FileDownloader(context);
+		for (int i = 0; i < articleList.size(); i++) {
+			ArticleDTO articleDTO = articleList.get(i);
+			articleNumber = articleDTO.getArticleNumber();
+			title = articleDTO.getTitle();
+			writer = articleDTO.getWriter();
+			id = articleDTO.getId();
+			content = articleDTO.getContent();
+			writeDate = articleDTO.getWriteDate();
+			imgName = articleDTO.getImgName();
+			
+			if ( i == articleList.size() - 1) {
+				String prefName = context.getResources().getString(R.string.shared_preferences_name);
+				sharedPreferences = context.getSharedPreferences(prefName, context.MODE_PRIVATE);
+				String prefArticleNumberKey = context.getResources().getString(R.string.pref_article_number);
+				SharedPreferences.Editor editor = sharedPreferences.edit();
+
+				editor.putString(prefArticleNumberKey, (articleNumber - 1) + "");
+				editor.commit();
+			}
+			
+			try {
+				title = URLDecoder.decode(title, "UTF-8");
+				writer = URLDecoder.decode(writer, "UTF-8");
+				id = URLDecoder.decode(id, "UTF-8");
+				content = URLDecoder.decode(content, "UTF-8");
+				writeDate = URLDecoder.decode(writeDate, "UTF-8");
+				imgName = URLDecoder.decode(imgName, "UTF-8");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			ContentValues values = new ContentValues();
+			values.put("_id", articleNumber);
+			values.put("Title", title);
+			values.put("Writer", writer);
+			values.put("Id", id);
+			values.put("Content", content);
+			values.put("WriteDate", writeDate);
+			values.put("ImgName", imgName);
+
+			context.getContentResolver().insert(NextagramContract.Articles.CONTENT_URI, values);
+
+			fileDownloader.downloadFile("http://10.73.44.93/~stu20/image/" + imgName, imgName);
+		}
 	}
 }
