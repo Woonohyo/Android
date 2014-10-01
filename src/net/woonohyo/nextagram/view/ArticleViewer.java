@@ -41,6 +41,7 @@ public class ArticleViewer extends Activity {
 		imageViewWeakReference = new WeakReference<ImageView>(ivImage);
 
 		String articleNumber = getIntent().getExtras().getString("ArticleNumber");
+		Log.i(TAG, "ArticleNumber: " + articleNumber);
 
 		ProviderDao dao = new ProviderDao(getApplicationContext());
 
@@ -52,6 +53,7 @@ public class ArticleViewer extends Activity {
 		tvContents.setText(article.getContent());
 
 		String imgPath = getApplicationContext().getFilesDir().getPath() + "/" + article.getImgName();
+		Log.i(TAG, imgPath);
 		bitmap = imageLoader.get(imgPath);
 		
 		if (bitmap != null) {

@@ -35,7 +35,6 @@ import com.google.android.gms.gcm.*;
 
 public class NewsFeedViewer extends ActionBarActivity implements OnClickListener, OnItemClickListener {
 	private final String TAG = NewsFeedViewer.class.getSimpleName();
-	private ArrayList<ArticleDTO> articleList = new ArrayList<ArticleDTO>();
 	private ProviderDao dao;
 	private Proxy proxy;
 	private Button buWrite;
@@ -223,7 +222,8 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		// Intent intent = new Intent(this, ArticleViewer.class);
 		Intent intent = new Intent("net.woonohyo.nextagram.view.ArticleViewer");
-		intent.putExtra("ArticleNumber", articleList.get(position).getArticleNumber() + "");
+		intent.putExtra("ArticleNumber", dao.getArticleList().get(position).getArticleNumber() + "");
+		Log.i(TAG, "Position: " + position + "ArticleNumber:" + dao.getArticleList().get(position).getArticleNumber());
 		startActivity(intent);
 	}
 	

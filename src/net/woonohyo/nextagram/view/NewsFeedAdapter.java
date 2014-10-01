@@ -56,46 +56,6 @@ public class NewsFeedAdapter extends CursorAdapter {
 		String articleNumber;
 	}
 
-	/*
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		// MainList의 각각의 칸
-		View row = convertView;
-
-		if (row == null) {
-			// LayoutInflater inflater = LayoutInflater.from(context);
-			LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-			Log.i("Adapter", "" + inflater);
-			row = inflater.inflate(layoutResourceId, parent, false);
-		}
-
-		TextView tvText1 = (TextView) row.findViewById(R.id.main_list_title_text_view);
-		TextView tvText2 = (TextView) row.findViewById(R.id.main_list_contents_text_view);
-		tvText1.setText(article.get(position).getTitle());
-		tvText2.setText(article.get(position).getContent());
-
-		ImageView imgView = (ImageView) row.findViewById(R.id.main_list_image_view);
-		imageViewWeakReference = new WeakReference<ImageView>(imgView);
-
-		String imgPath = context.getFilesDir().getPath() + "/" + article.get(position).getImgName();
-		File imgLoadPath = new File(imgPath);
-
-		if (imgLoadPath.exists()) {
-			int sampleSize = 16;
-			
-			BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-			bmOptions.inPurgeable = true;
-			bmOptions.inSampleSize = sampleSize;
-
-			Bitmap bitmap = BitmapFactory.decodeFile(imgPath);
-			Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-			imageViewWeakReference.get().setImageBitmap(resized);
-		}
-
-		return row;
-	}
-	*/
-
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		View row = layoutInflater.inflate(layoutResourceId, parent, false);
@@ -132,8 +92,8 @@ public class NewsFeedAdapter extends CursorAdapter {
 			
 			Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
 			Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-//			viewHolder.imageView.setImageBitmap(resized);
-			imageViewWeakReference.get().setImageBitmap(resized);
+			viewHolder.imageView.setImageBitmap(resized);
+//			imageViewWeakReference.get().setImageBitmap(resized);
 		}
 	}
 	

@@ -11,8 +11,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class NextagramProvider extends ContentProvider {
+	private static final String TAG = NextagramProvider.class.getSimpleName();
 	private SQLiteDatabase database;
 	private final String TABLE_NAME = "Articles";
 	private Context context;
@@ -97,6 +99,15 @@ public class NextagramProvider extends ContentProvider {
 		// ARTICLE_LIST에 대한 URI 요청 시,
 		if (URI_MATCHER.match(uri) == ARTICLE_LIST) {
 			// database에 insert 후 해당 ID를 리턴 받음.
+			String sql = "SELECT * FROM Articles";
+			Cursor cursor = database.rawQuery(sql, null);
+			Log.i(TAG, "Total Row:" + cursor.getCount());
+			Log.i(TAG, "Current ID:" + values.get("_id"));
+			cursor.close();
+			if (cursor.getCount() == Integer.parseInt(values.get("_id").toString())) {
+				return null;
+			}
+			
 			long id = database.insert("Articles", null, values);
 
 			Uri itemUri = ContentUris.withAppendedId(uri, id);

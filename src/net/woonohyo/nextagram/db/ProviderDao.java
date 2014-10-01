@@ -140,14 +140,11 @@ public class ProviderDao {
 		String writeDate;
 		String imgName;
 
-		String sql = "SELECT * FROM Articles WHERE ArticleNumber = " + articleNumber + ";";
-		// Cursor cursor = database.rawQuery(sql, null);
 		Cursor cursor = context.getContentResolver().query(NextagramContract.Articles.CONTENT_URI, NextagramContract.Articles.PROJECTION_ALL, null, null,
 				NextagramContract.Articles._ID + " ASC");
 
 		if (cursor != null) {
-			cursor.moveToFirst();
-			articleNumber = cursor.getInt(0);
+			cursor.moveToPosition(articleNumber - 1);
 			title = cursor.getString(1);
 			writer = cursor.getString(2);
 			id = cursor.getString(3);
