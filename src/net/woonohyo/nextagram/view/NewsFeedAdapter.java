@@ -123,6 +123,8 @@ public class NewsFeedAdapter extends CursorAdapter {
 		
 		String imgPath = context.getFilesDir().getPath() + "/" + imageName;
 		File fileAtImgPath = new File(imgPath);
+		imageViewWeakReference = new WeakReference<ImageView>(viewHolder.imageView);
+		
 		
 		if (fileAtImgPath.exists()) {
 			BitmapFactory.Options options = new BitmapFactory.Options();
@@ -130,7 +132,8 @@ public class NewsFeedAdapter extends CursorAdapter {
 			
 			Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
 			Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
-			viewHolder.imageView.setImageBitmap(resized);
+//			viewHolder.imageView.setImageBitmap(resized);
+			imageViewWeakReference.get().setImageBitmap(resized);
 		}
 	}
 	

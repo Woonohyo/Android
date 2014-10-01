@@ -8,9 +8,11 @@ import net.woonohyo.nextagram.db.ArticleDTO;
 import net.woonohyo.nextagram.db.ProviderDao;
 import net.woonohyo.nextagram.network.Proxy;
 import net.woonohyo.nextagram.provider.NextagramContract;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +29,9 @@ import android.widget.Toast;
 
 import com.devspark.sidenavigation.*;
 import com.devspark.sidenavigation.SideNavigationView.Mode;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.gcm.*;
 
 public class NewsFeedViewer extends ActionBarActivity implements OnClickListener, OnItemClickListener {
 	private final String TAG = NewsFeedViewer.class.getSimpleName();
@@ -37,6 +42,13 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 	private SideNavigationView sideNavigationView;
 	private SharedPreferences sharedPreferences;
 	private NewsFeedController newsFeedController;
+	private int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+	public static final String PROPERTY_REG_ID = "registration_id";
+	private String SENDER_ID = "398662932365";
+	private GoogleCloudMessaging gcm;
+	private String regId;
+	private Context context;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,55 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		newsFeedController.refreshData();
 		
 		setListView(dao.getArticleList());
+		
+		sharedPreferences = getSharedPreferences(getResources().getString(R.string.shared_preferences_name), Context.MODE_PRIVATE);
+		context = getApplicationContext();
+		
+		if(checkGooglePlayServices()) {
+			gcm = GoogleCloudMessaging.getInstance(this);
+			regId = getRegistrationId(context);
+			if(regId.isEmpty()) {
+				registerInBackground();
+			}
+		}
+	}
+
+	private void registerInBackground() {
+		new AsyncTask<Object, Object, Object>() {
+
+			@Override
+			protected Object doInBackground(Object... params) {
+				try {
+					if ( gcm == null) {
+						gcm = GoogleCloudMessaging.getInstance(context);
+					}
+					regId = gcm.register(SENDER_ID);
+					Log.i(TAG, "Registration ID: " + regId);
+					storeRegistrationId(context, regId);
+					
+				} catch (Exception e) {
+					Log.e(TAG, "Error: " + e.getMessage());
+				}
+				return null;
+			}
+		}.execute(null, null, null);
+		
+	}
+	
+	private void storeRegistrationId(Context context, String regId) {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString(PROPERTY_REG_ID, regId);
+		editor.commit();
+	}
+
+	private String getRegistrationId(Context context) {
+		String registrationId = sharedPreferences.getString(PROPERTY_REG_ID, "");
+		if (registrationId.isEmpty()) {
+			Log.i(TAG, "Registration Id Not Found");
+			return "";
+		}
+		Log.i(TAG, "Registratino ID: " + registrationId);
+		return registrationId;
 	}
 
 	@Override
@@ -129,6 +190,7 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		}
 	};
 
+
 	private void setListView(ArrayList<ArticleDTO> arrayList) {
 		// CustomAdapter 적용
 		ListView listView = (ListView) findViewById(R.id.main_listView);
@@ -163,5 +225,19 @@ public class NewsFeedViewer extends ActionBarActivity implements OnClickListener
 		Intent intent = new Intent("net.woonohyo.nextagram.view.ArticleViewer");
 		intent.putExtra("ArticleNumber", articleList.get(position).getArticleNumber() + "");
 		startActivity(intent);
+	}
+	
+	private boolean checkGooglePlayServices() {
+		int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				GooglePlayServicesUtil.getErrorDialog(resultCode, this, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+			} else {
+				Log.i(TAG, "The device doesn't support Google Play Service.");
+				finish();
+			}
+			return false;
+		}
+		return true;
 	}
 }
