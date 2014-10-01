@@ -43,6 +43,7 @@ public class NewsFeedAdapter extends CursorAdapter {
 	private LayoutInflater layoutInflater;
 	private Bitmap bitmap;
 	private ImageLoader imageLoader = ImageLoader.getInstance();
+	private String THUMBNAIL = "TN";
 	
 	public NewsFeedAdapter(Context context, Cursor cursor, int layoutId) {
 		super(context, cursor, layoutId);
@@ -91,7 +92,8 @@ public class NewsFeedAdapter extends CursorAdapter {
 
 		if (bitmap != null) {
 			Log.i(TAG, "Cache Hit! - " + imgPath);
-			imageViewWeakReference.get().setImageBitmap(bitmap);
+			Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
+			imageViewWeakReference.get().setImageBitmap(resized);
 			
 		} else {
 			Log.i(TAG, "Saving new one" + imgPath);
@@ -105,7 +107,7 @@ public class NewsFeedAdapter extends CursorAdapter {
 				bitmap = BitmapFactory.decodeFile(imgPath, bmOptions);
 				Bitmap resized = Bitmap.createScaledBitmap(bitmap, 100, 100, true);
 				imageViewWeakReference.get().setImageBitmap(resized);
-				imageLoader.put(imgPath, resized);
+				imageLoader.put(imgPath, bitmap);
 			}
 		}
 	}
