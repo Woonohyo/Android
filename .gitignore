@@ -24,3 +24,11 @@ proguard/
 
 # Log Files
 *.log
+
+.classpath
+.project
+.settings/
+.idea/
+libs/
+lint.xml
+ic_launcher-web.png
