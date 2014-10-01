@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Nextagram</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_custom_list">CustomListActivity</string>
+    <string name="title_activity_writing_article_view">WritingArticleView</string>
+    <string name="title_activity_article_writing_view">ArticleWritingView</string>
+    <string name="title_activity_article_writer">ArticleWriter</string>
+    <string name="shared_preferences_name">NextagramSharedPreferences</string>
+    <string name="server_url">ServerURL</string>
+    <string name="server_url_value">http://10.73.44.93/~stu20/</string>
+	<string name="pref_article_number">ArticleNumber</string>
+</resources>
