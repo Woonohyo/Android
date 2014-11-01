@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/firstRowFirstBlock"
+        android:layout_width="180dp"
+        android:layout_height="160dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="#4020F5" >
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/firstRowSecondBlock"
+        android:layout_width="90dp"
+        android:layout_height="320dp"
+        android:layout_toEndOf="@id/firstRowFirstBlock"
+        android:layout_toRightOf="@id/firstRowFirstBlock"
+        android:background="#000000" >
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/firstRowThirdBlock"
+        android:layout_width="90dp"
+        android:layout_height="160dp"
+        android:layout_toEndOf="@id/firstRowSecondBlock"
+        android:layout_toRightOf="@id/firstRowSecondBlock"
+        android:background="#F9FE55"
+        ></RelativeLayout>
+
+    <!-- 두번째줄 시작 -->
+    <RelativeLayout
+        android:id="@+id/secondRowFirstBlock"
+        android:layout_width="90dp"
+        android:layout_height="160dp"
+        android:layout_below="@+id/firstRowFirstBlock"
+        android:background="#1D0A82" >
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/secondRowSecondBlock"
+        android:layout_width="90dp"
+        android:layout_height="160dp"
+        android:layout_below="@id/firstRowFirstBlock"
+        android:layout_toRightOf="@id/secondRowFirstBlock"
+        android:layout_toEndOf="@id/secondRowFirstBlock"
+        android:background="#068727"
+        >
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/secondRowThirdBlock"
+        android:layout_width="90dp"
+        android:layout_height="160dp"
+        android:layout_below="@id/firstRowThirdBlock"
+        android:layout_toRightOf="@id/firstRowSecondBlock"
+        android:layout_toEndOf="@id/firstRowSecondBlock"
+        android:background="#9F252A"
+        ></RelativeLayout>
+    
+    
+    <!-- 세번째줄 시작 -->
+
+    <RelativeLayout
+        android:id="@+id/thirdRow"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_below="@id/secondRowFirstBlock"
+        android:background="#BBBBBB" >
+    </RelativeLayout>
+
+    <!-- 네번째줄 시작 -->
+    
+    <RelativeLayout
+        android:id="@+id/fourthRowFirstBlock"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_below="@id/thirdRow"
+        android:background="#F81816" >
+    </RelativeLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/fourthRowSecondBlock"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_toRightOf="@id/fourthRowFirstBlock"
+        android:layout_toEndOf="@id/fourthRowFirstBlock"
+        android:layout_below="@id/thirdRow"
+        android:background="#17FE52"
+        ></RelativeLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/fourthRowThirdBlock"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_toRightOf="@id/fourthRowSecondBlock"
+        android:layout_toEndOf="@id/fourthRowSecondBlock"
+        android:layout_below="@id/thirdRow"
+        android:background="#F284E8"
+        ></RelativeLayout>
+
+</RelativeLayout>
